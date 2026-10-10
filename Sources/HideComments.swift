@@ -30,20 +30,6 @@ enum HideComments {
     """
 
     static var userScript: WKUserScript {
-        let source = """
-        (function () {
-            var style = document.createElement('style');
-            style.id = 'nct-hide-comments';
-            style.textContent = `\(css)`;
-            function attach() {
-                if (!style.isConnected) {
-                    (document.head || document.documentElement).appendChild(style);
-                }
-            }
-            attach();
-            new MutationObserver(attach).observe(document.documentElement, { childList: true });
-        })();
-        """
-        return WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+        Injection.styleScript(id: "nct-hide-comments", css: css)
     }
 }

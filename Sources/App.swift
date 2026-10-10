@@ -26,6 +26,7 @@ struct WebView: UIViewRepresentable {
         // Google refuses sign-in from user agents that look like an embedded web view.
         config.applicationNameForUserAgent = "Version/17.4 Mobile/15E148 Safari/604.1"
         config.userContentController.addUserScript(HideComments.userScript)
+        AdBlock.userScripts.forEach(config.userContentController.addUserScript)
 
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
@@ -34,7 +35,16 @@ struct WebView: UIViewRepresentable {
         webView.isOpaque = false
         webView.backgroundColor = .black
         webView.scrollView.backgroundColor = .black
-        webView.load(URLRequest(url: Self.home))
+        // The block rules must be in place before the first request goes out.
+        WKContentRuleListStore.default().compileContentRuleList(
+            forIdentifier: AdBlock.ruleListID,
+            encodedContentRuleList: AdBlock.ruleListJSON
+        ) { ruleList, _ in
+            if let ruleList = ruleList {
+                webView.configuration.userContentController.add(ruleList)
+            }
+            webView.load(URLRequest(url: Self.home))
+        }
         return webView
     }
 
