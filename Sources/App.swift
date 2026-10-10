@@ -28,6 +28,7 @@ struct WebView: UIViewRepresentable {
         config.userContentController.addUserScript(HideComments.userScript)
         AdBlock.userScripts.forEach(config.userContentController.addUserScript)
         Shorts.userScripts.forEach(config.userContentController.addUserScript)
+        config.userContentController.addUserScript(Posts.userScript)
 
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
